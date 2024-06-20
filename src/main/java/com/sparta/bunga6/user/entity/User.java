@@ -1,5 +1,8 @@
 package com.sparta.bunga6.user.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.sparta.bunga6.base.entity.Timestamped;
 import com.sparta.bunga6.user.dto.ProfileRequest;
 import com.sparta.bunga6.user.dto.SignupRequest;
@@ -31,9 +34,11 @@ public class User extends Timestamped {
     @Column(nullable = false)
     private String address;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Order> orderList = new ArrayList<>();
+
+    @Column(nullable = false)
+    private String introduce;
 
     /**
      * 생성자
@@ -43,6 +48,7 @@ public class User extends Timestamped {
         this.password = encodedPassword;
         this.name = request.getName();
         this.address = request.getAddress();
+        this.introduce = request.getIntroduce();
     }
 
     /**

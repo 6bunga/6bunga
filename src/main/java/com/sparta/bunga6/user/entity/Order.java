@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sparta.bunga6.base.entity.Timestamped;
+import com.sparta.bunga6.user.dto.OrderCreateRequest;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -11,12 +12,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -32,12 +36,33 @@ public class Order extends Timestamped {
 	@Column
 	private String status;
 
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<User> userList = new ArrayList<>();
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 
-	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Setter
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "delivery_id")
 	private Delivery delivery;
 
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderLine> orderLineList = new ArrayList<>();
+
+	public Order(OrderCreateRequest request, User user) {
+		this.user = user;
+	}
+
+	public void updateStatus(String status) {
+		this.status = status;
+	}
+
+	public void addOrderLine(OrderLine orderLine) {
+		this.orderLineList.add(orderLine);
+		orderLine.setOrder(this);
+	}
+
+	public void setDelivery(Delivery delivery) {
+		this.delivery = delivery;
+
+	}
 }

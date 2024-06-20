@@ -1,6 +1,7 @@
 package com.sparta.bunga6.user.entity;
 
 import com.sparta.bunga6.base.entity.Timestamped;
+import com.sparta.bunga6.user.dto.OrderCreateRequest;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +14,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -25,13 +27,17 @@ public class Delivery extends Timestamped {
 	@Column(name = "delivery_id")
 	private Long id;
 
-	@OneToOne
-	@JoinColumn(name = "order_id", nullable = false)
-	private Order order;
-
 	@Column(nullable = false)
 	private String status;
 
 	@Column(nullable = false)
 	private String address;
+
+	public Delivery(User user) {
+		this.address = user.getAddress();
+	}
+
+	public void updateStatus(String status) {
+		this.status = status;
+	}
 }
