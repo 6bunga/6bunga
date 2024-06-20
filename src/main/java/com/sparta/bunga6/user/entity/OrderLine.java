@@ -1,13 +1,13 @@
 package com.sparta.bunga6.user.entity;
 
-import com.sparta.bunga6.base.entity.Timestamped;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -17,15 +17,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "deliveries")
-public class Delivery extends Timestamped {
+@Table(name = "order_lines")
+public class OrderLine {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "delivery_id")
+	@Column(name = "order_line_id")
 	private Long id;
 
-	@OneToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id", nullable = false)
 	private Order order;
 
@@ -34,4 +34,8 @@ public class Delivery extends Timestamped {
 
 	@Column(nullable = false)
 	private String address;
+
+	@OneToOne
+	@JoinColumn(name = "product_id", nullable = false)
+	private Product product;
 }

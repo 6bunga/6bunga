@@ -11,9 +11,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "orders")
 public class Order extends Timestamped {
 
 	@Id
@@ -34,7 +35,9 @@ public class Order extends Timestamped {
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<User> userList = new ArrayList<>();
 
-	@OneToOne
-	@JoinColumn(name = "delivery", nullable = false)
-	private Order delivery;
+	@OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Delivery delivery;
+
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<OrderLine> orderLineList = new ArrayList<>();
 }

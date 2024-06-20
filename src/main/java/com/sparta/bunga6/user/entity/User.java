@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "users")
 public class User extends Timestamped {
 
     @Id
@@ -29,6 +30,10 @@ public class User extends Timestamped {
 
     @Column(nullable = false)
     private String address;
+
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 
     /**
      * 생성자
