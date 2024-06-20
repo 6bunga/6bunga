@@ -1,6 +1,7 @@
 package com.sparta.bunga6.product.controller;
 
 import com.sparta.bunga6.base.dto.CommonResponse;
+import com.sparta.bunga6.product.dto.FindProductResponseDto;
 import com.sparta.bunga6.product.dto.RegisterRequsetDto;
 import com.sparta.bunga6.product.dto.RegisterResponseDto;
 import com.sparta.bunga6.product.entity.Product;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import static com.sparta.bunga6.util.ControllerUtil.getFieldErrorResponseEntity;
 import static com.sparta.bunga6.util.ControllerUtil.getResponseEntity;
@@ -29,5 +32,8 @@ public class ProductController {
         return ResponseEntity.ok("상품등록을 완료했습니다!");
     }
 
-
+    @GetMapping("/{productId}")
+    public List<FindProductResponseDto> findAllProduct() {
+        return productService.findAllProduct();
+    }
 }
