@@ -34,4 +34,12 @@ public class ProductService {
                 .map(FindProductResponseDto::new)
                 .collect(Collectors.toList());
     }
+
+    public FindProductResponseDto findProduct(Long id) {
+        Product product = productRepository.findById(id).
+                orElseThrow(() ->
+                        new IllegalArgumentException("입력하신 상품 ID가 존재하지 않습니다.")
+                );
+        return new FindProductResponseDto(product);
+    }
 }

@@ -32,8 +32,13 @@ public class ProductController {
         return ResponseEntity.ok("상품등록을 완료했습니다!");
     }
 
-    @GetMapping("/{productId}")
+    @GetMapping
     public List<FindProductResponseDto> findAllProduct() {
         return productService.findAllProduct();
+    }
+
+    @GetMapping("/{id}")
+    public FindProductResponseDto findProduct(@PathVariable Long id) {
+        return productService.findProduct(id);
     }
 }
