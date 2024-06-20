@@ -36,8 +36,7 @@ public class OrderService {
 	private Long count;
 
 	@Transactional
-	public OrderResponse createOrder(OrderCreateRequest orderRequest,
-		HttpServletRequest request) {
+	public OrderResponse createOrder(OrderCreateRequest orderRequest, HttpServletRequest request) {
 		// 토큰에서 유저 정보 추출
 		String token = jwtProvider.getAccessTokenFromHeader(request);
 		String username = jwtProvider.getUsernameFromToken(token);
@@ -48,6 +47,11 @@ public class OrderService {
 		Order order = new Order(orderRequest, user);
 		order.updateStatus("ORDERED");
 
+		// Delivery 생성
+		Delivery delivery = new Delivery(user);
+		delivery.updateStatus("PROCESSED");
+		order.setDelivery(delivery);
+
 		// ID로 Product 검색
 		Product product = productRepository.findById(orderRequest.getProductId())
 			.orElseThrow(() -> new IllegalArgumentException("일치하는 상품이 없습니다."));
@@ -55,21 +59,23 @@ public class OrderService {
 		// OrderLine 생성
 		OrderLine orderLine = new OrderLine(orderRequest, order, product);
 		orderLine.updateStatus("ORDERED");
-		orderLine.orderPrice(product.getPrice() * orderRequest.getCount().intValue());
+		// 전체 가격 합산
+		order.setTotalPrice(order.getOrderLineList().stream()
+			.mapToInt(OrderLine::getOrderPrice)
+			.sum());
 
 		// Order에 OrderLine 추가
 		order.addOrderLine(orderLine);
 
-		// Delivery 생성
-		Delivery delivery = new Delivery(user);
-		delivery.updateStatus("PROCESSED");
-
-		// Order에 Delivery 추가
-		order.setDelivery(delivery);
-
+		// Order 저장
 		orderRepository.save(order);
 
-		return new OrderResponse(order,user,delivery,orderLine);
+		return new OrderResponse(order);
 	}
 
+	public OrderResponse getOrder(Long orderId) {
+		Order order = orderRepository.findById(orderId)
+			.orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+		return new OrderResponse(order);
+	}
 }

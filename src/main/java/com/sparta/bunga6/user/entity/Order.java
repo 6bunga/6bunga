@@ -48,6 +48,10 @@ public class Order extends Timestamped {
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderLine> orderLineList = new ArrayList<>();
 
+	@Setter
+	@Column
+	private int totalPrice;
+
 	public Order(OrderCreateRequest request, User user) {
 		this.user = user;
 	}
