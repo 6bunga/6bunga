@@ -2,10 +2,12 @@ package com.sparta.bunga6.product.entity;
 
 import com.sparta.bunga6.base.entity.Timestamped;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Setter
+@Getter
 public class Product extends Timestamped {
 
     @Id
