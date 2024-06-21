@@ -28,13 +28,9 @@ public class OrderLine extends Timestamped {
 	@Column(name = "order_line_id")
 	private Long id;
 
-	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "order_id", nullable = false)
 	private Order order;
-
-	@Column(nullable = false)
-	private String status;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id", nullable = false)
@@ -53,12 +49,7 @@ public class OrderLine extends Timestamped {
 		this.orderPrice = product.getPrice() * count;
 	}
 
-	public void updateStatus(String status) {
-		this.status = status;
+	public void assignOrder(Order order) {
+		this.order = order;
 	}
-
-	public void orderPrice(int price) {
-		this.orderPrice = price;
-	}
-
 }

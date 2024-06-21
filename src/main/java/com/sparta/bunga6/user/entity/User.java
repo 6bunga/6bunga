@@ -1,10 +1,6 @@
 package com.sparta.bunga6.user.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sparta.bunga6.base.entity.Timestamped;
-import com.sparta.bunga6.order.entity.Order;
 import com.sparta.bunga6.user.dto.ProfileRequest;
 import com.sparta.bunga6.user.dto.SignupRequest;
 import jakarta.persistence.*;
@@ -18,7 +14,6 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "users")
 public class User extends Timestamped {
 
     private static final int PASSWORD_HISTORY_LIMIT = 3;
@@ -46,12 +41,6 @@ public class User extends Timestamped {
 
     @ElementCollection
     private List<String> passwordHistory = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Order> orderList = new ArrayList<>();
-
-    @Column(nullable = false)
-    private String introduce;
 
     /**
      * 생성자

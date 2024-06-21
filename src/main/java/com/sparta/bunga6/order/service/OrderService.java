@@ -12,8 +12,10 @@ import com.sparta.bunga6.order.dto.OrderCreateRequest;
 import com.sparta.bunga6.order.dto.OrderLineRequest;
 import com.sparta.bunga6.order.dto.OrderResponse;
 import com.sparta.bunga6.order.entity.Delivery;
+import com.sparta.bunga6.order.entity.DeliveryStatus;
 import com.sparta.bunga6.order.entity.Order;
 import com.sparta.bunga6.order.entity.OrderLine;
+import com.sparta.bunga6.order.entity.OrderStatus;
 import com.sparta.bunga6.order.entity.Product;
 import com.sparta.bunga6.security.UserDetailsImpl;
 import com.sparta.bunga6.user.entity.User;
@@ -44,12 +46,12 @@ public class OrderService {
 	@Transactional
 	public Order createOrder(OrderCreateRequest orderRequest, User user) {
 		// Order 생성
-		Order order = new Order(orderRequest, user);
-		order.updateStatus("ORDERED");
+		Order order = new Order(user);
+		order.updateStatus(OrderStatus.ORDERED);
 
 		// Delivery 생성
 		Delivery delivery = new Delivery(user);
-		delivery.updateStatus("PROCESSED");
+		delivery.updateStatus(DeliveryStatus.PREPARING);
 		order.setDelivery(delivery);
 
 		for (OrderLineRequest orderLineRequest : orderRequest.getOrderLines()) {
@@ -59,7 +61,6 @@ public class OrderService {
 
 			// OrderLine 생성
 			OrderLine orderLine = new OrderLine(order, product, orderLineRequest.getCount());
-			orderLine.updateStatus("ORDERED");
 
 			// Order에 OrderLine 추가
 			order.addOrderLine(orderLine);

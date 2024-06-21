@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.sparta.bunga6.order.entity.Delivery;
+import com.sparta.bunga6.order.entity.DeliveryStatus;
 import com.sparta.bunga6.order.entity.Order;
 import com.sparta.bunga6.order.entity.OrderLine;
+import com.sparta.bunga6.order.entity.OrderStatus;
 import com.sparta.bunga6.user.entity.User;
 
 import lombok.Data;
@@ -16,8 +18,8 @@ public class OrderResponse {
 	private Long orderId;
 	private Long userId;
 	private Long deliveryId;
-	private String orderStatus;
-	private String deliveryStatus;
+	private OrderStatus orderStatus;
+	private DeliveryStatus deliveryStatus;
 	private String address;
 	private List<OrderLineResponse> orderLines;
 	private int totalPrice;
