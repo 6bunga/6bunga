@@ -1,4 +1,4 @@
-package com.sparta.bunga6.user.entity;
+package com.sparta.bunga6.order.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,8 +1,9 @@
-package com.sparta.bunga6.user.controller;
+package com.sparta.bunga6.order.controller;
 
 import com.sparta.bunga6.base.dto.CommonResponse;
-import com.sparta.bunga6.user.dto.*;
-import com.sparta.bunga6.user.service.OrderService;
+import com.sparta.bunga6.order.dto.OrderCreateRequest;
+import com.sparta.bunga6.order.dto.OrderResponse;
+import com.sparta.bunga6.order.service.OrderService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

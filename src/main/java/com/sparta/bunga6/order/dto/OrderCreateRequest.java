@@ -1,4 +1,4 @@
-package com.sparta.bunga6.user.dto;
+package com.sparta.bunga6.order.dto;
 
 import lombok.Data;
 

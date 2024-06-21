@@ -1,6 +1,6 @@
-package com.sparta.bunga6.user.dto;
+package com.sparta.bunga6.order.dto;
 
-import com.sparta.bunga6.user.entity.OrderLine;
+import com.sparta.bunga6.order.entity.OrderLine;
 
 import lombok.Data;
 

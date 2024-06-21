@@ -1,11 +1,11 @@
-package com.sparta.bunga6.user.dto;
+package com.sparta.bunga6.order.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.sparta.bunga6.user.entity.Delivery;
-import com.sparta.bunga6.user.entity.Order;
-import com.sparta.bunga6.user.entity.OrderLine;
+import com.sparta.bunga6.order.entity.Delivery;
+import com.sparta.bunga6.order.entity.Order;
+import com.sparta.bunga6.order.entity.OrderLine;
 import com.sparta.bunga6.user.entity.User;
 
 import lombok.Data;
@@ -19,7 +19,6 @@ public class OrderResponse {
 	private String orderStatus;
 	private String deliveryStatus;
 	private String address;
-	private int orderPrice;
 	private List<OrderLineResponse> orderLines;
 	private int totalPrice;
 
@@ -31,7 +30,6 @@ public class OrderResponse {
 		this.orderStatus = order.getStatus();
 		this.deliveryStatus = delivery.getStatus();
 		this.address = delivery.getAddress();
-		this.orderPrice = orderLine.getOrderPrice();
 	}
 
 	public OrderResponse(Order order) {
