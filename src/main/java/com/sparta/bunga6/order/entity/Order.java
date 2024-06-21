@@ -1,10 +1,11 @@
-package com.sparta.bunga6.user.entity;
+package com.sparta.bunga6.order.entity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.sparta.bunga6.base.entity.Timestamped;
-import com.sparta.bunga6.user.dto.OrderCreateRequest;
+import com.sparta.bunga6.order.dto.OrderCreateRequest;
+import com.sparta.bunga6.user.entity.User;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

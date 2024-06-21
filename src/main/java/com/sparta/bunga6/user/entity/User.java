@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sparta.bunga6.base.entity.Timestamped;
+import com.sparta.bunga6.order.entity.Order;
 import com.sparta.bunga6.user.dto.ProfileRequest;
 import com.sparta.bunga6.user.dto.SignupRequest;
 import jakarta.persistence.*;
