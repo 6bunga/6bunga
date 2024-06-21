@@ -10,7 +10,7 @@ public class OrderLineResponse {
 	private Long orderLineId;
 	private String status;
 	private Long productId;
-	private Long count;
+	private int count;
 	private int orderPrice;
 
 	public OrderLineResponse(OrderLine orderLine) {

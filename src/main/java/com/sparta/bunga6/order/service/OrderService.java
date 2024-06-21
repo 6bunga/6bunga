@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sparta.bunga6.jwt.JwtProvider;
 import com.sparta.bunga6.order.dto.AddressRequest;
 import com.sparta.bunga6.order.dto.OrderCreateRequest;
+import com.sparta.bunga6.order.dto.OrderLineRequest;
 import com.sparta.bunga6.order.dto.OrderResponse;
 import com.sparta.bunga6.order.entity.Delivery;
 import com.sparta.bunga6.order.entity.Order;
@@ -56,21 +57,18 @@ public class OrderService {
 		delivery.updateStatus("PROCESSED");
 		order.setDelivery(delivery);
 
+		for (OrderLineRequest orderLineRequest : orderRequest.getOrderLines()) {
+			// ID로 Product 검색
+			Product product = productRepository.findById(orderLineRequest.getProductId())
+				.orElseThrow(() -> new IllegalArgumentException("일치하는 상품이 없습니다."));
 
-		// ID로 Product 검색
-		Product product = productRepository.findById(orderRequest.getProductId())
-			.orElseThrow(() -> new IllegalArgumentException("일치하는 상품이 없습니다."));
+			// OrderLine 생성
+			OrderLine orderLine = new OrderLine(order, product, orderLineRequest.getCount());
+			orderLine.updateStatus("ORDERED");
 
-		// OrderLine 생성
-		OrderLine orderLine = new OrderLine(orderRequest, order, product);
-		orderLine.updateStatus("ORDERED");
-
-		// Order에 OrderLine 추가
-		order.addOrderLine(orderLine);
-
-		// 전체 가격 합산
-		orderLine.orderPrice(product.getPrice() * orderLine.getCount().intValue());
-
+			// Order에 OrderLine 추가
+			order.addOrderLine(orderLine);
+		}
 		// Order 저장
 		orderRepository.save(order);
 

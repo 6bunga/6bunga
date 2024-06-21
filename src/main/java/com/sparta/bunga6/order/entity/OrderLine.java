@@ -41,15 +41,16 @@ public class OrderLine extends Timestamped {
 	private Product product;
 
 	@Column(nullable = false)
-	private Long count;
+	private int count;
 
 	@Column
 	private int orderPrice;
 
-	public OrderLine(OrderCreateRequest request, Order order, Product product) {
-		this.count = request.getCount();
+	public OrderLine(Order order, Product product, int count) {
+		this.count = count;
 		this.order = order;
 		this.product = product;
+		this.orderPrice = product.getPrice() * count;
 	}
 
 	public void updateStatus(String status) {

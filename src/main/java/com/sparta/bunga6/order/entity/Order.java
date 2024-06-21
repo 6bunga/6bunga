@@ -62,7 +62,7 @@ public class Order extends Timestamped {
 	}
 
 	public void addOrderLine(OrderLine orderLine) {
-		this.orderLineList.add(orderLine);
+		orderLineList.add(orderLine);
 		orderLine.setOrder(this);
 	}
 
