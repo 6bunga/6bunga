@@ -117,7 +117,25 @@ public class OrderService {
 
 		deliveryRepository.save(delivery);
 
+		orderRepository.save(order);
+
 		return new OrderResponse(order);
+	}
+
+	@Transactional
+	public String deleteOrder(HttpServletRequest request, Long orderId) {
+		String token = jwtProvider.getAccessTokenFromHeader(request);
+		String username = jwtProvider.getUsernameFromToken(token);
+		User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("일치하는 유저가 없습니다."));
+
+		Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("일치하는 주문이 없습니다."));
+		if (!order.getUser().equals(user)) {
+			throw new IllegalArgumentException("자신의 주문만 삭제 가능합니다.");
+		}
+
+		orderRepository.delete(order);
+
+		return orderId + "번 주문";
 	}
 }
 

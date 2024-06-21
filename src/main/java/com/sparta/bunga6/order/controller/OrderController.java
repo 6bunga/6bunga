@@ -83,4 +83,17 @@ public class OrderController {
 
 		return getResponseEntity(response, "주문 수정 성공");
 	}
+
+	/**
+	 * 주문 삭제
+	 */
+	@DeleteMapping("/orders/{orderId}")
+	public ResponseEntity<CommonResponse<?>> deleteOrders(
+		HttpServletRequest request,
+		@PathVariable Long orderId
+	) {
+		String response = orderService.deleteOrder(request, orderId);
+
+		return getResponseEntity(response, "주문 삭제 성공");
+	}
 }
