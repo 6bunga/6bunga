@@ -2,7 +2,7 @@ package com.sparta.bunga6.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.bunga6.jwt.JwtProvider;
-import com.sparta.bunga6.user.entity.UserRoleEnum;
+import com.sparta.bunga6.user.entity.UserRole;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,7 +47,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 if (jwtProvider.validateRefreshToken(refreshToken)) {
                     log.info("리프레시 토큰 검증 성공 & 새로운 액세스 토큰 발급");
                     String username = jwtProvider.getUsernameFromToken(refreshToken);
-                    UserRoleEnum role = jwtProvider.getRoleFromToken(refreshToken);
+                    UserRole role = jwtProvider.getRoleFromToken(refreshToken);
 
                     String newAccessToken = jwtProvider.createAccessToken(username, role);
 

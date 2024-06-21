@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.bunga6.jwt.JwtProvider;
 import com.sparta.bunga6.jwt.RefreshTokenService;
 import com.sparta.bunga6.user.dto.LoginRequest;
-import com.sparta.bunga6.user.entity.UserRoleEnum;
+import com.sparta.bunga6.user.entity.UserRole;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -60,7 +60,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain, Authentication authResult) throws IOException {
         log.info("인증 성공 및 JWT 생성");
         String username = ((UserDetailsImpl) authResult.getPrincipal()).getUsername();
-        UserRoleEnum role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
+        UserRole role = ((UserDetailsImpl) authResult.getPrincipal()).getUser().getRole();
 
         String accessToken = jwtProvider.createAccessToken(username, role);
         String refreshToken = jwtProvider.createRefreshToken(username, role);

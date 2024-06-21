@@ -1,6 +1,6 @@
 package com.sparta.bunga6.jwt;
 
-import com.sparta.bunga6.user.entity.UserRoleEnum;
+import com.sparta.bunga6.user.entity.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -47,7 +47,7 @@ public class JwtProvider {
     /**
      * Access 토큰 생성
      */
-    public String createAccessToken(String username, UserRoleEnum role) {
+    public String createAccessToken(String username, UserRole role) {
         Date date = new Date();
 
         // Access 토큰 만료기간
@@ -65,7 +65,7 @@ public class JwtProvider {
     /**
      * Refresh 토큰 생성
      */
-    public String createRefreshToken(String username, UserRoleEnum role) {
+    public String createRefreshToken(String username, UserRole role) {
         Date date = new Date();
 
         return BEARER_PREFIX + Jwts.builder()
@@ -161,9 +161,9 @@ public class JwtProvider {
     /**
      * 토큰에서 role 가져오기
      */
-    public UserRoleEnum getRoleFromToken(String token) {
+    public UserRole getRoleFromToken(String token) {
         Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-        return claims.get(AUTHORIZATION_KEY, UserRoleEnum.class);
+        return claims.get(AUTHORIZATION_KEY, UserRole.class);
     }
 
     /**
