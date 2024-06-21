@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/orders")
 public class OrderController {
 
 	private final OrderService orderService;
@@ -29,7 +29,7 @@ public class OrderController {
 	/**
 	 * 주문 생성
 	 */
-	@PostMapping("/orders")
+	@PostMapping
 	public ResponseEntity<CommonResponse<?>> createOrder(
 		@Valid @RequestBody OrderCreateRequest requestDto,
 		BindingResult bindingResult,
@@ -46,7 +46,7 @@ public class OrderController {
 	/**
 	 * 주문 단건 조회
 	 */
-	@GetMapping("/orders/{ordersId}")
+	@GetMapping("/{ordersId}")
 	public ResponseEntity<CommonResponse<?>> getOrders(
 		@PathVariable Long ordersId,
 		HttpServletRequest request
@@ -59,7 +59,7 @@ public class OrderController {
 	/**
 	 * 주문 전체 조회
 	 */
-	@GetMapping("/orders")
+	@GetMapping
 	public ResponseEntity<CommonResponse<?>> getAllOrders(HttpServletRequest request) {
 		List<OrderResponse> response = orderService.getAllOrders(request);
 
@@ -69,7 +69,7 @@ public class OrderController {
 	/**
 	 * 주문 수정
 	 */
-	@PatchMapping("/orders/{orderId}")
+	@PatchMapping("/{orderId}")
 	public ResponseEntity<CommonResponse<?>> updateOrders(
 		@Valid @RequestBody AddressRequest requestDto,
 		BindingResult bindingResult,
@@ -87,7 +87,7 @@ public class OrderController {
 	/**
 	 * 주문 삭제
 	 */
-	@DeleteMapping("/orders/{orderId}")
+	@DeleteMapping("/{orderId}")
 	public ResponseEntity<CommonResponse<?>> deleteOrders(
 		HttpServletRequest request,
 		@PathVariable Long orderId
