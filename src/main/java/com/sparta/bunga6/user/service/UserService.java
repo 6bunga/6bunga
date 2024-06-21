@@ -2,16 +2,19 @@ package com.sparta.bunga6.user.service;
 
 import com.sparta.bunga6.jwt.RefreshTokenRepository;
 import com.sparta.bunga6.user.dto.ProfileRequest;
+import com.sparta.bunga6.user.dto.RoleRequest;
 import com.sparta.bunga6.user.dto.SignupRequest;
 import com.sparta.bunga6.user.dto.UpdatePasswordRequest;
 import com.sparta.bunga6.user.entity.User;
-import com.sparta.bunga6.user.entity.UserRoleEnum;
+import com.sparta.bunga6.user.entity.UserRole;
 import com.sparta.bunga6.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -30,17 +33,16 @@ public class UserService {
      */
     @Transactional
     public User signup(SignupRequest request) {
-        // 사용자 ID 중복 확인
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("이미 존재하는 ID 입니다.");
+            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
         }
-        // 사용자 ROLE 확인
-        UserRoleEnum role = UserRoleEnum.USER;
+
+        UserRole role = UserRole.USER;
         if (request.isAdmin()) {
             if (!request.getAdminToken().equals(adminToken)) {
-                throw new IllegalArgumentException("일치하지 않는 어드민 토큰입니다.");
+                throw new IllegalArgumentException("어드민 토큰이 일치하지 않습니다.");
             }
-            role = UserRoleEnum.ADMIN;
+            role = UserRole.ADMIN;
         }
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -57,7 +59,16 @@ public class UserService {
     @Transactional
     public Long logout(User user) {
         refreshTokenRepository.deleteByUsername(user.getUsername());
+
         return user.getId();
+    }
+
+    /**
+     * 회원 조회
+     */
+    public User getUser(Long id) {
+        return userRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 
     /**
@@ -65,7 +76,7 @@ public class UserService {
      */
     @Transactional
     public User updateProfile(Long id, ProfileRequest request) {
-        User user = getUserById(id);
+        User user = getUser(id);
         user.updateProfile(request);
 
         return user;
@@ -76,36 +87,40 @@ public class UserService {
      */
     @Transactional
     public User updatePassword(Long id, UpdatePasswordRequest request) {
-        User user = getUserById(id);
-        validatePassword(request.getOldPassword(), user.getPassword());
-        validateDuplicatePassword(request.getNewPassword(), user.getPassword());
+        User user = getUser(id);
+        String currentPassword = user.getPassword();
 
-        user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+        String oldPassword = request.getOldPassword();
+        if (!passwordEncoder.matches(oldPassword, currentPassword)) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        String newPassword = request.getNewPassword();
+        if (passwordEncoder.matches(newPassword, currentPassword)) {
+            throw new IllegalArgumentException("현재 비밀번호와 동일한 비밀번호로 수정할 수 없습니다.");
+        }
+
+        user.updatePassword(passwordEncoder.encode(newPassword));
 
         return user;
     }
 
     /**
-     * 회원 조회
+     * 전체 회원 조회 (관리자 전용)
      */
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("userId가 " + id + " 인 사용자가 존재하지 않습니다."));
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     /**
-     * 비밀번호 검증
+     * 회원 권한 수정 (관리자 전용)
      */
-    public void validatePassword(String rawPassword, String encodedPassword) {
-        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-    }
+    @Transactional
+    public User updateRole(RoleRequest request) {
+        User user = getUser(request.getUserId());
+        user.updateRole(request.getRole());
 
-    private void validateDuplicatePassword(String newPassword, String currentPassword) {
-        if (passwordEncoder.matches(newPassword, currentPassword)) {
-            throw new IllegalArgumentException("현재 비밀번호와 동일한 비밀번호로 수정할 수 없습니다.");
-        }
+        return user;
     }
 
 }

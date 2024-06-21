@@ -24,28 +24,28 @@ public class User extends Timestamped {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String username; // 사용자 ID
+    private String username;
 
     @Column(nullable = false)
     private String password;
 
-    @ElementCollection
-    private List<String> passwordHistory = new ArrayList<>();
-
     @Column(nullable = false)
-    private String name; // 사용자 이름
-
-    @Column(nullable = false)
-    @Enumerated(value = EnumType.STRING)
-    private UserRoleEnum role;
+    private String name;
 
     @Column(nullable = false)
     private String address; // 추후 임베디드 타입으로 변경
 
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserRole role; // 사용자 권한 [USER, ADMIN]
+
+    @ElementCollection
+    private List<String> passwordHistory = new ArrayList<>();
+
     /**
      * 생성자
      */
-    public User(SignupRequest request, String encodedPassword, UserRoleEnum role) {
+    public User(SignupRequest request, String encodedPassword, UserRole role) {
         this.username = request.getUsername();
         this.password = encodedPassword;
         this.name = request.getName();
@@ -86,6 +86,13 @@ public class User extends Timestamped {
     public void updateProfile(ProfileRequest request) {
         this.name = request.getName();
         this.address = request.getAddress();
+    }
+
+    /**
+     * 권한 수정
+     */
+    public void updateRole(UserRole role) {
+        this.role = role;
     }
 
     public List<String> getPasswordHistory() {
