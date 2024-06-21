@@ -1,5 +1,8 @@
 package com.sparta.bunga6.order.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,7 @@ import com.sparta.bunga6.order.repository.ProductRepository;
 import com.sparta.bunga6.user.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -73,9 +77,27 @@ public class OrderService {
 		return new OrderResponse(order);
 	}
 
-	public OrderResponse getOrder(Long orderId) {
+	public OrderResponse getOrder(Long orderId, HttpServletRequest request) {
+		String token = jwtProvider.getAccessTokenFromHeader(request);
+		String username = jwtProvider.getUsernameFromToken(token);
+		User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("일치하는 유저가 없습니다."));
+
 		Order order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+		if (!user.equals(order.getUser())) {
+			throw new IllegalArgumentException("자신의 주문만 조회할 수 있습니다.");
+		}
 		return new OrderResponse(order);
+	}
+
+	public List<OrderResponse> getAllOrders(HttpServletRequest request) {
+		String token = jwtProvider.getAccessTokenFromHeader(request);
+		String username = jwtProvider.getUsernameFromToken(token);
+		User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("일치하는 유저가 없습니다."));
+
+		List<Order> ordersList = orderRepository.findAll();
+		return ordersList.stream()
+			.map(OrderResponse::new)
+			.collect(Collectors.toList());
 	}
 }
