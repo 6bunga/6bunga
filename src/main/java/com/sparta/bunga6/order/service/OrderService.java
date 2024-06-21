@@ -117,8 +117,6 @@ public class OrderService {
 
 		deliveryRepository.save(delivery);
 
-		orderRepository.save(order);
-
 		return new OrderResponse(order);
 	}
 
