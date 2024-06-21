@@ -1,6 +1,7 @@
 package com.sparta.bunga6.order.entity;
 
 import com.sparta.bunga6.base.entity.Timestamped;
+import com.sparta.bunga6.order.dto.AddressRequest;
 import com.sparta.bunga6.user.entity.User;
 
 import jakarta.persistence.Column;
@@ -36,5 +37,9 @@ public class Delivery extends Timestamped {
 
 	public void updateStatus(String status) {
 		this.status = status;
+	}
+
+	public void updateAddress(AddressRequest request) {
+		this.address = request.getAddress();
 	}
 }

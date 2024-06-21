@@ -1,6 +1,7 @@
 package com.sparta.bunga6.order.controller;
 
 import com.sparta.bunga6.base.dto.CommonResponse;
+import com.sparta.bunga6.order.dto.AddressRequest;
 import com.sparta.bunga6.order.dto.OrderCreateRequest;
 import com.sparta.bunga6.order.dto.OrderResponse;
 import com.sparta.bunga6.order.service.OrderService;
@@ -63,5 +64,23 @@ public class OrderController {
 		List<OrderResponse> response = orderService.getAllOrders(request);
 
 		return getResponseEntity(response, "주문 조회 성공");
+	}
+
+	/**
+	 * 주문 수정
+	 */
+	@PatchMapping("/orders/{orderId}")
+	public ResponseEntity<CommonResponse<?>> updateOrders(
+		@Valid @RequestBody AddressRequest requestDto,
+		BindingResult bindingResult,
+		HttpServletRequest request,
+		@PathVariable Long orderId
+	) {
+		if (bindingResult.hasErrors()) {
+			return getFieldErrorResponseEntity(bindingResult, "주문 수정 실패");
+		}
+		OrderResponse response  = orderService.updateOrder(requestDto,request,orderId);
+
+		return getResponseEntity(response, "주문 수정 성공");
 	}
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sparta.bunga6.jwt.JwtProvider;
+import com.sparta.bunga6.order.dto.AddressRequest;
 import com.sparta.bunga6.order.dto.OrderCreateRequest;
 import com.sparta.bunga6.order.dto.OrderResponse;
 import com.sparta.bunga6.order.entity.Delivery;
@@ -21,7 +22,6 @@ import com.sparta.bunga6.order.repository.ProductRepository;
 import com.sparta.bunga6.user.repository.UserRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,9 +95,29 @@ public class OrderService {
 		String username = jwtProvider.getUsernameFromToken(token);
 		User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("일치하는 유저가 없습니다."));
 
-		List<Order> ordersList = orderRepository.findAll();
+		List<Order> ordersList = orderRepository.findByUser(user);
 		return ordersList.stream()
 			.map(OrderResponse::new)
 			.collect(Collectors.toList());
 	}
+
+	@Transactional
+	public OrderResponse updateOrder(AddressRequest requestDto, HttpServletRequest request, Long orderId) {
+		String token = jwtProvider.getAccessTokenFromHeader(request);
+		String username = jwtProvider.getUsernameFromToken(token);
+		User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("일치하는 유저가 없습니다."));
+
+		Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("일치하는 주문이 없습니다."));
+		if (!order.getUser().equals(user)) {
+			throw new IllegalArgumentException("자신의 주문만 수정 가능합니다.");
+		}
+
+		Delivery delivery = order.getDelivery();
+		delivery.updateAddress(requestDto);
+
+		deliveryRepository.save(delivery);
+
+		return new OrderResponse(order);
+	}
 }
+
