@@ -47,7 +47,7 @@ public class JwtProvider {
         Date date = new Date();
 
         // Access 토큰 만료기간 (30분)
-        long ACCESS_TOKEN_TIME = 10 * 1000L;
+        long ACCESS_TOKEN_TIME = 1000 * 1000L;
 //        long ACCESS_TOKEN_TIME = 30 * 60 * 1000L;
 
         return BEARER_PREFIX + Jwts.builder()

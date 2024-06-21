@@ -15,6 +15,7 @@ import com.sparta.bunga6.order.entity.Delivery;
 import com.sparta.bunga6.order.entity.Order;
 import com.sparta.bunga6.order.entity.OrderLine;
 import com.sparta.bunga6.order.entity.Product;
+import com.sparta.bunga6.security.UserDetailsImpl;
 import com.sparta.bunga6.user.entity.User;
 import com.sparta.bunga6.order.repository.DeliveryRepository;
 import com.sparta.bunga6.order.repository.OrderLineRepository;
@@ -41,13 +42,7 @@ public class OrderService {
 	private Long count;
 
 	@Transactional
-	public OrderResponse createOrder(OrderCreateRequest orderRequest, HttpServletRequest request) {
-		// 토큰에서 유저 정보 추출
-		String token = jwtProvider.getAccessTokenFromHeader(request);
-		String username = jwtProvider.getUsernameFromToken(token);
-		User user = userRepository.findByUsername(username)
-			.orElseThrow(() -> new IllegalArgumentException("일치하는 유저가 없습니다."));
-
+	public Order createOrder(OrderCreateRequest orderRequest, User user) {
 		// Order 생성
 		Order order = new Order(orderRequest, user);
 		order.updateStatus("ORDERED");
@@ -72,41 +67,27 @@ public class OrderService {
 		// Order 저장
 		orderRepository.save(order);
 
-		return new OrderResponse(order);
+		return order;
 	}
 
-	public OrderResponse getOrder(Long orderId, HttpServletRequest request) {
-		String token = jwtProvider.getAccessTokenFromHeader(request);
-		String username = jwtProvider.getUsernameFromToken(token);
-		User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("일치하는 유저가 없습니다."));
-
+	public Order getOrder(Long orderId, User user) {
 		Order order = orderRepository.findById(orderId)
 			.orElseThrow(() -> new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
-		if (!user.equals(order.getUser())) {
+		if (!user.getId().equals(order.getUser().getId())) {
 			throw new IllegalArgumentException("자신의 주문만 조회할 수 있습니다.");
 		}
-		return new OrderResponse(order);
+		return order;
 	}
 
-	public List<OrderResponse> getAllOrders(HttpServletRequest request) {
-		String token = jwtProvider.getAccessTokenFromHeader(request);
-		String username = jwtProvider.getUsernameFromToken(token);
-		User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("일치하는 유저가 없습니다."));
-
+	public List<Order> getAllOrders(User user) {
 		List<Order> ordersList = orderRepository.findByUser(user);
-		return ordersList.stream()
-			.map(OrderResponse::new)
-			.collect(Collectors.toList());
+		return ordersList;
 	}
 
 	@Transactional
-	public OrderResponse updateOrder(AddressRequest requestDto, HttpServletRequest request, Long orderId) {
-		String token = jwtProvider.getAccessTokenFromHeader(request);
-		String username = jwtProvider.getUsernameFromToken(token);
-		User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("일치하는 유저가 없습니다."));
-
+	public Order updateOrder(AddressRequest requestDto,Long orderId, User user) {
 		Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("일치하는 주문이 없습니다."));
-		if (!order.getUser().equals(user)) {
+		if (!user.getId().equals(order.getUser().getId())) {
 			throw new IllegalArgumentException("자신의 주문만 수정 가능합니다.");
 		}
 
@@ -115,23 +96,19 @@ public class OrderService {
 
 		deliveryRepository.save(delivery);
 
-		return new OrderResponse(order);
+		return order;
 	}
 
 	@Transactional
-	public String deleteOrder(HttpServletRequest request, Long orderId) {
-		String token = jwtProvider.getAccessTokenFromHeader(request);
-		String username = jwtProvider.getUsernameFromToken(token);
-		User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("일치하는 유저가 없습니다."));
-
+	public Order deleteOrder(Long orderId, User user) {
 		Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("일치하는 주문이 없습니다."));
-		if (!order.getUser().equals(user)) {
+		if (!user.getId().equals(order.getUser().getId())) {
 			throw new IllegalArgumentException("자신의 주문만 삭제 가능합니다.");
 		}
 
 		orderRepository.delete(order);
 
-		return orderId + "번 주문";
+		return order;
 	}
 }
 
