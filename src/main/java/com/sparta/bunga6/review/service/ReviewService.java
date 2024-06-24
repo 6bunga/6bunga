@@ -1,11 +1,12 @@
 package com.sparta.bunga6.review.service;
 
-import com.sparta.bunga6.order.repository.OrderRepository;
-import com.sparta.bunga6.review.repository.ReviewRepository;
 import com.sparta.bunga6.review.dto.ReviewResponse;
 import com.sparta.bunga6.review.entity.Review;
+import com.sparta.bunga6.review.repository.ReviewRepository;
 import com.sparta.bunga6.user.repository.UserRepository;
+import com.sparta.bunga6.order.repository.OrderRepository;
 import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +22,10 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
 
-    // 리뷰 작성
+    // 리뷰 생성
+    @Transactional
     public ReviewResponse createReview(Long productId, Long userId, String content) {
-        if (!orderRepository.existsByDeliveredStatus(productId, userId, "DELIVERED")) {
+        if (!orderRepository.existsByProductIdAndUserIdAndStatus(productId, userId, "DELIVERED")) {
             throw new IllegalStateException("상품이 배송 완료되지 않았습니다.");
         }
 
