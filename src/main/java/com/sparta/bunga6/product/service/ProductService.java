@@ -1,19 +1,20 @@
 package com.sparta.bunga6.product.service;
 
 import com.sparta.bunga6.jwt.RefreshTokenRepository;
-import com.sparta.bunga6.product.dto.*;
+import com.sparta.bunga6.product.dto.FindProductResponse;
+import com.sparta.bunga6.product.dto.PagingRequest;
+import com.sparta.bunga6.product.dto.RegisterRequest;
+import com.sparta.bunga6.product.dto.UpdateProductRequest;
 import com.sparta.bunga6.product.entity.Product;
 import com.sparta.bunga6.product.repository.ProductRepository;
 import com.sparta.bunga6.user.entity.User;
 import com.sparta.bunga6.user.repository.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -23,8 +24,6 @@ import java.util.stream.Stream;
 public class ProductService {
 
    private final ProductRepository productRepository;
-   private final UserRepository userRepository;
-   private final RefreshTokenRepository refreshTokenRepository;
 
     //상품등록
     @Transactional
@@ -38,11 +37,19 @@ public class ProductService {
 
 
     //상품 전체조회
-    public List<FindProductResponse> findAllProduct() {
+    public List<Product> findAllProduct() {
         List<Product> productList = productRepository.findAll();
-        return productList.stream()
-                .map(FindProductResponse::new)
-                .collect(Collectors.toList());
+        return productList;
+    }
+
+    //상품 단건조회
+    public FindProductResponse findProduct(Long id) {
+        Product product = productRepository.findById(id).
+                orElseThrow(() ->
+                        new IllegalArgumentException("입력하신 상품 ID가 존재하지 않습니다.")
+                );
+        return new FindProductResponse(product);
+
     }
 
     //상품 페이징조회
@@ -63,52 +70,33 @@ public class ProductService {
                 .toList();
     }
 
-    //상품 단건조회
-    public FindProductResponse findProduct(Long id) {
-        Product product = productRepository.findById(id).
-                orElseThrow(() ->
-                        new IllegalArgumentException("입력하신 상품 ID가 존재하지 않습니다.")
-                );
-        return new FindProductResponse(product);
-    }
-
-    //상품 정보 전체 업데이트
+    //상품 정보 업데이트
     @Transactional
-    public UpdateProductResponse updateProduct(Long id,
-                                               UpdateProductRequest requestDto,
-                                               HttpServletRequest request) {
-        // 토큰 검증
-        String newBearerAccessToken = jwtProvider.getRefreshTokenFromRequest(request);
-        String username = jwtProvider.getUsernameFromToken(newBearerAccessToken);
+    public Product updateProduct(Long id,
+                                 UpdateProductRequest request,
+                                 User user) {
 
         // 상품 조회
         Product product = productRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("입력하신 상품 ID가 존재하지 않습니다"));
         // 본인 확인
-        if (!product.getUser().getUsername().equals(username)) {
+        if (!user.getId().equals(product.getUser().getId())) {
             throw new IllegalArgumentException("본인의 상품만 수정 할 수 있습니다.");
         }
-        product.setName(requestDto.getName());
-        product.setPrice(requestDto.getPrice());
-        product.setStockQuantity(requestDto.getStockQuantity());
-
-        Product updateProduct = productRepository.save(product);
-        return
-        new UpdateProductResponse(updateProduct);
+        product.updateProduct(request);
+        return product;
     }
 
     // 상품삭제
     @Transactional
     public String deleteProduct(Long id,
-                                HttpServletRequest request) {
-        String newBearerAccessToken = jwtProvider.getRefreshTokenFromRequest(request);
-        String username = jwtProvider.getUsernameFromToken(newBearerAccessToken);
+                                User user) {
         // 상품 조회
         Product product = productRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("입력하신 상품 ID가 존재하지 않습니다"));
         // 유저 조회
-        if (!product.getUser().getUsername().equals(username)) {
-            throw new IllegalArgumentException("본인의 상품만 수정 할 수 있습니다.");
+        if (!user.getId().equals(product.getUser().getId())) {
+            throw new IllegalArgumentException("본인의 상품만 삭제 할 수 있습니다.");
         }
         // 삭제
         productRepository.deleteById(id);
