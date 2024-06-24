@@ -1,9 +1,10 @@
 package com.sparta.bunga6.review.entity;
 
+import com.sparta.bunga6.product.entity.Product;
+import com.sparta.bunga6.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -14,19 +15,22 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long productId;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(nullable = false)
     private String content;
 
-    public Review(Long productId, Long userId, String content) {
-        this.productId = productId;
-        this.userId = userId;
+    public Review(String content, User user, Product product) {
         this.content = content;
+        this.user = user;
+        this.product = product;
     }
 
     public void setContent(String content) {
