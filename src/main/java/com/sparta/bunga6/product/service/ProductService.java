@@ -1,24 +1,17 @@
 package com.sparta.bunga6.product.service;
 
-import com.sparta.bunga6.jwt.RefreshTokenRepository;
 import com.sparta.bunga6.product.dto.FindProductResponse;
-import com.sparta.bunga6.product.dto.PagingRequest;
 import com.sparta.bunga6.product.dto.RegisterRequest;
 import com.sparta.bunga6.product.dto.UpdateProductRequest;
 import com.sparta.bunga6.product.entity.Product;
 import com.sparta.bunga6.product.repository.ProductRepository;
 import com.sparta.bunga6.user.entity.User;
-import com.sparta.bunga6.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -53,24 +46,6 @@ public class ProductService {
                 );
         return new FindProductResponse(product);
 
-    }
-
-    //상품 페이징조회
-    public List<FindProductResponse> findPagingProduct(Long page, PagingRequest requestDto) {
-        Stream <Product> productStream = Stream.empty();
-
-        // 정렬방식
-        String sortBy = requestDto.getSortBy();
-
-        if (sortBy == null) {
-            productStream = productStream.sorted(Comparator.comparing(Product::getWriteDate).reversed());
-        } else {
-        }
-        return productStream
-                .skip((page - 1) * 5L)
-                .limit(5)
-                .map(FindProductResponse::new)
-                .toList();
     }
 
     //상품 정보 업데이트

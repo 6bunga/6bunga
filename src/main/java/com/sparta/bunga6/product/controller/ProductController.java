@@ -1,13 +1,16 @@
 package com.sparta.bunga6.product.controller;
 
 import com.sparta.bunga6.base.dto.CommonResponse;
+import com.sparta.bunga6.order.dto.OrderResponse;
 import com.sparta.bunga6.product.dto.*;
 import com.sparta.bunga6.product.entity.Product;
+import com.sparta.bunga6.product.repository.ProductRepository;
 import com.sparta.bunga6.product.service.ProductService;
 import com.sparta.bunga6.security.UserDetailsImpl;
 import com.sparta.bunga6.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.sql.Delete;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -62,14 +65,6 @@ public class ProductController {
         return getResponseEntity(response, "상품 조회 성공!!");
     }
 
-    //상품 페이징 조회
-    @GetMapping("/page/{page}")
-    public List<FindProductResponse> findPagingProduct(@PathVariable Long page,
-                                                       @RequestBody PagingRequest requestDto
-    ) {
-        return productService.findPagingProduct(page, requestDto);
-    }
-
     //상품 수정
     @PutMapping("/{id}")
     public ResponseEntity<CommonResponse<?>> updateProduct(
@@ -88,8 +83,11 @@ public class ProductController {
 
     //상품 삭제
     @DeleteMapping("/{id}")
-    public String deleteProduct(@PathVariable Long id,
-                                User user) {
-        return productService.deleteProduct(id, user);
+    public ResponseEntity<CommonResponse<?>> deleteProduct(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        DeleteProductResponse response = new DeleteProductResponse(productService.deleteProduct(id, userDetails.getUser()));
+
+        return getResponseEntity(response, "상품 삭제 성공!");
     }
 }
