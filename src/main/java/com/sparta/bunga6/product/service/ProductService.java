@@ -1,19 +1,16 @@
 package com.sparta.bunga6.product.service;
 
-import com.sparta.bunga6.jwt.JwtProvider;
+import com.sparta.bunga6.jwt.RefreshTokenRepository;
 import com.sparta.bunga6.product.dto.*;
 import com.sparta.bunga6.product.entity.Product;
 import com.sparta.bunga6.product.repository.ProductRepository;
 import com.sparta.bunga6.user.entity.User;
 import com.sparta.bunga6.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,39 +18,35 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
+
 public class ProductService {
 
    private final ProductRepository productRepository;
-   private final JwtProvider jwtProvider;
    private final UserRepository userRepository;
+   private final RefreshTokenRepository refreshTokenRepository;
 
     //상품등록
     @Transactional
-    public RegisterResponseDto registerProduct(RegisterRequestDto requsetDto,
-                                               HttpServletResponse response,
-                                               HttpServletRequest request) {
-
-        String token = jwtProvider.getAccessTokenFromHeader(request);
-        String username = jwtProvider.getUsernameFromToken(token);
-        //
-        User user = userRepository.findByUsername(username).orElseThrow(() ->
-                new IllegalArgumentException("등록된 사용자를 찾을수 없습니다.")
-        );
-        Product product = new Product(requsetDto, user);
-        product.setUser(user);
-        Product createProduct = productRepository.save(product);
-        return new RegisterResponseDto(createProduct);
+    public Product registerProduct(RegisterRequest requset, User user) {
+        Product product = new Product(requset, user);
+        if (productRepository.existsByname(requset.getName())) {
+            throw new IllegalArgumentException("이미 존재하는 상품입니다.");
+        }
+        return productRepository.save(product);
     }
+
+
     //상품 전체조회
-    public List<FindProductResponseDto> findAllProduct() {
+    public List<FindProductResponse> findAllProduct() {
         List<Product> productList = productRepository.findAll();
         return productList.stream()
-                .map(FindProductResponseDto::new)
+                .map(FindProductResponse::new)
                 .collect(Collectors.toList());
     }
 
     //상품 페이징조회
-    public List<FindProductResponseDto> findPagingProduct(Long page, PagingRequestDto requestDto) {
+    public List<FindProductResponse> findPagingProduct(Long page, PagingRequest requestDto) {
         Stream <Product> productStream = Stream.empty();
 
         // 정렬방식
@@ -66,24 +59,24 @@ public class ProductService {
         return productStream
                 .skip((page - 1) * 5L)
                 .limit(5)
-                .map(FindProductResponseDto::new)
+                .map(FindProductResponse::new)
                 .toList();
     }
 
     //상품 단건조회
-    public FindProductResponseDto findProduct(Long id) {
+    public FindProductResponse findProduct(Long id) {
         Product product = productRepository.findById(id).
                 orElseThrow(() ->
                         new IllegalArgumentException("입력하신 상품 ID가 존재하지 않습니다.")
                 );
-        return new FindProductResponseDto(product);
+        return new FindProductResponse(product);
     }
 
     //상품 정보 전체 업데이트
     @Transactional
-    public UpdateProductResponseDto updateProduct(Long id,
-                                                  UpdateProductRequestDto requestDto,
-                                                  HttpServletRequest request) {
+    public UpdateProductResponse updateProduct(Long id,
+                                               UpdateProductRequest requestDto,
+                                               HttpServletRequest request) {
         // 토큰 검증
         String newBearerAccessToken = jwtProvider.getRefreshTokenFromRequest(request);
         String username = jwtProvider.getUsernameFromToken(newBearerAccessToken);
@@ -101,7 +94,7 @@ public class ProductService {
 
         Product updateProduct = productRepository.save(product);
         return
-        new UpdateProductResponseDto(updateProduct);
+        new UpdateProductResponse(updateProduct);
     }
 
     // 상품삭제

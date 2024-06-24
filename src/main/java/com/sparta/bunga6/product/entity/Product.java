@@ -1,7 +1,7 @@
 package com.sparta.bunga6.product.entity;
 
 import com.sparta.bunga6.base.entity.Timestamped;
-import com.sparta.bunga6.product.dto.RegisterRequestDto;
+import com.sparta.bunga6.product.dto.RegisterRequest;
 import com.sparta.bunga6.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -45,7 +45,7 @@ public class Product extends Timestamped {
     @Column
     private String username;
 
-    public Product(RegisterRequestDto requestDto, User user) {
+    public Product(RegisterRequest requestDto, User user) {
         this.name = requestDto.getName();
         this.price = requestDto.getPrice();
         this.stockQuantity = requestDto.getStockQuantity();
