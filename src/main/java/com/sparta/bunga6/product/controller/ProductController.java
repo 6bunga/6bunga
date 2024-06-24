@@ -8,6 +8,7 @@ import com.sparta.bunga6.security.UserDetailsImpl;
 import com.sparta.bunga6.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -63,7 +64,9 @@ public class ProductController {
 
     //상품 페이징 조회
     @GetMapping("/page/{page}")
-    public List<FindProductResponse> findPagingProduct(@PathVariable Long page, @RequestBody PagingRequest requestDto) {
+    public List<FindProductResponse> findPagingProduct(@PathVariable Long page,
+                                                       @RequestBody PagingRequest requestDto
+    ) {
         return productService.findPagingProduct(page, requestDto);
     }
 

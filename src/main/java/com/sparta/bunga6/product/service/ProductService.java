@@ -10,6 +10,9 @@ import com.sparta.bunga6.product.repository.ProductRepository;
 import com.sparta.bunga6.user.entity.User;
 import com.sparta.bunga6.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +41,7 @@ public class ProductService {
 
     //상품 전체조회
     public List<Product> findAllProduct() {
-        List<Product> productList = productRepository.findAll();
+        List<Product> productList = productRepository.findAllBy(PageRequest.of(0, 5));
         return productList;
     }
 
