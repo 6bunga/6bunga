@@ -1,7 +1,8 @@
 package com.sparta.bunga6.product.entity;
 
 import com.sparta.bunga6.base.entity.Timestamped;
-import com.sparta.bunga6.product.dto.RegisterRequestDto;
+import com.sparta.bunga6.product.dto.RegisterRequest;
+import com.sparta.bunga6.product.dto.UpdateProductRequest;
 import com.sparta.bunga6.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -15,7 +16,6 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @NoArgsConstructor
-
 public class Product extends Timestamped {
 
 
@@ -45,10 +45,17 @@ public class Product extends Timestamped {
     @Column
     private String username;
 
-    public Product(RegisterRequestDto requestDto, User user) {
-        this.name = requestDto.getName();
-        this.price = requestDto.getPrice();
-        this.stockQuantity = requestDto.getStockQuantity();
+    public Product(RegisterRequest request, User user) {
+        this.name = request.getName();
+        this.price = request.getPrice();
+        this.stockQuantity = request.getStockQuantity();
+        this.username = user.getUsername();
+    }
+
+    public void updateProduct(UpdateProductRequest request) {
+        this.name = request.getName();
+        this.price = request.getPrice();
+        this.stockQuantity = request.getStockQuantity();
         this.username = user.getUsername();
     }
 }
