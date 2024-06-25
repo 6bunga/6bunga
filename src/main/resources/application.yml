@@ -31,3 +31,5 @@ jwt:
 
 admin:
   token: AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC
+
+spring.main.allow-bean-definition-overriding: true

@@ -1,17 +1,12 @@
 package com.sparta.bunga6.product.controller;
 
 import com.sparta.bunga6.base.dto.CommonResponse;
-import com.sparta.bunga6.order.dto.OrderResponse;
 import com.sparta.bunga6.product.dto.*;
 import com.sparta.bunga6.product.entity.Product;
-import com.sparta.bunga6.product.repository.ProductRepository;
 import com.sparta.bunga6.product.service.ProductService;
 import com.sparta.bunga6.security.UserDetailsImpl;
-import com.sparta.bunga6.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.sql.Delete;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
