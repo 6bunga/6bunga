@@ -51,7 +51,7 @@ public class Review extends Timestamped {
     }
 
     public void verifyUser(User user) {
-        if (!this.user.equals(user)) {
+        if (!this.user.getUsername().equals(user.getUsername())) {
             throw new IllegalStateException("리뷰 작성자가 일치하지 않습니다.");
         }
     }
